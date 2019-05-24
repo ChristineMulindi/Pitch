@@ -15,8 +15,12 @@ class User(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key = True)
     username = db.Column(db.String(255), index = True)
     email = db.Column(db.String(255),unique = True, index = True)
+    post_id = db.Column(db.Integer,db.ForeignKey('posts.id'))
     password_hash = db.Column(db.String(255))
 
+    comments = db.relationship('Comment', backref='user', lazy="dynamic")
+
+    
     @property
     def password(self):
         raise AttributeError('You cannot read the password attribute')
@@ -40,10 +44,12 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     pitch_id = db.Column(db.Integer)
+    pitch_category = db.Column(db.String)
     pitch_comment = db.Column(db.String)
     posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
+   
     def save_comment(self):
         db.session.add(self)
         db.session.commit()
@@ -53,3 +59,12 @@ class Comment(db.Model):
         comments = Comment.query.filter_by(pitch_id=id).all()
         return comments
        
+class Post(db.Model):
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer,primary_key = True)
+    name = db.Column(db.String(255))
+    users = db.relationship('User',backref = 'post',lazy="dynamic")
+
+    def __repr__(self):
+        return f'User {self.name}'
