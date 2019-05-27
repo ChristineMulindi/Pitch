@@ -14,7 +14,7 @@ class TestComment(unittest.TestCase):
         self.assertTrue(isinstance(self.new_comment, Comment))
 
     def test_check_instance_variables(self):
-        self.assertEquals(self.new_comment.pitch_id, 12345)
+        self.assertEquals(self.new_comment.comment_id, 12345)
         self.assertEquals(self.new_comment.pitch_category, 'Inspiration')
         self.assertEquals(self.new_comment.pitch_comment,'This is awesome')
         self.assertEquals(self.new_comment.user, self.user_James)
