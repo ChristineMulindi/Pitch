@@ -1,20 +1,11 @@
 from . import auth
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user,logout_user,login_required
 from ..models import User
-from .forms import RegistrationForm
+from .forms import RegistrationForm, LoginForm
 from .. import db
 from ..email import mail_message
 import markdown2  
-
-
-@main.route('/comment/<int:id>')
-def single_comment(id):
-    comment=Comment.query.get(id)
-    if comment is None:
-        abort(404)
-    format_comment = markdown2.markdown(comment.pitches_comment,extras=["code-friendly", "fenced-code-blocks"])
-    return render_template('comment.html',comment = comment,format_comment=format_comment)
 
 
 

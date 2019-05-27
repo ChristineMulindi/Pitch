@@ -15,13 +15,12 @@ class User(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key = True)
     username = db.Column(db.String(255), index = True)
     email = db.Column(db.String(255),unique = True, index = True)
-    post_id = db.Column(db.Integer,db.ForeignKey('posts.id'))
     bio = db.Column(db.String(255))
     profile_pic_path = db.Column(db.String())
     password_hash = db.Column(db.String(255))
 
     comments = db.relationship('Comment', backref='user', lazy="dynamic")
-
+    posts = db.relationship('Post', backref='user_post', lazy = "dynamic")
     
     @property
     def password(self):
@@ -39,17 +38,24 @@ class User(UserMixin,db.Model):
     def __repr__(self):
         return f'User {self.username}'    
 
+class Category(db.Model):
+    __tablename__="categories"
+    id=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String(255))
+
 
 class Comment(db.Model):
 
     __tablename__ = 'comments'
 
     id = db.Column(db.Integer, primary_key=True)
-    pitch_id = db.Column(db.Integer)
+    comment_id = db.Column(db.Integer)
     pitch_category = db.Column(db.String)
     pitch_comment = db.Column(db.String)
     posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    posts=db.relationship('Post', backref='comment', lazy='dynamic')
 
    
     def save_comment(self):
@@ -60,13 +66,34 @@ class Comment(db.Model):
     def get_comments(cls, id):
         comments = Comment.query.filter_by(pitch_id=id).all()
         return comments
-       
+
+
 class Post(db.Model):
     __tablename__ = 'posts'
 
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(255))
-    users = db.relationship('User',backref = 'post',lazy="dynamic")
+    text = db.Column(db.String(255))
+    post_id = db.Column(db.Integer)
+    category=db.Column(db.String(255))
+    user_id=db.Column(db.Integer, db.ForeignKey('users.id'))
+    comment_id =db.Column(db.Integer, db.ForeignKey('comments.id'))
+    
+    # comments=db.relationship('Comment', backref='post', lazy='dynamic')
+
+    def save_post(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+    def get_posts(self):
+        posts = Post.query.all()
+        return posts
+
+    def get_post(self):
+        post = Post.query.filter_by(user_id)
+        return post
+
 
     def __repr__(self):
         return f'User {self.name}'
