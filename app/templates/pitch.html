@@ -1,0 +1,22 @@
+{% extends "./base.html" %} {% import 'bootstrap/wtf.html' as wtf %} {% block content %}
+
+{% if post %}
+{{post.title}}
+
+By {{post.user.username}}
+
+{{post.text}}
+
+{% endif %}
+{% if current_user.is_authenticated %}
+
+Comment
+{{ wtf.quick_form(comment_form) }}
+{% endif %}
+
+Comments
+{% for comment in comments %}
+Posted by {{comment.user.username}}
+{{comment.text}}
+{% endfor %}
+{% endblock %}
