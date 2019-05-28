@@ -1,5 +1,14 @@
 {% extends "./base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
+
+<!-- Styles block -->
+
+{% block styles%}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/index.css')}}">
+{% endblock %}
+
+
 {% block content %}
 <div class="container" style="margin-top:30px">
     <div class="page-header">

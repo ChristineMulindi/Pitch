@@ -1,25 +1,38 @@
-{% extends "./base.html" %}
+{% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
+
+<!-- Styles block -->
+
+{% block styles%}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/index.css')}}">
+{% endblock %}
+
+
 {% block content %}
 <div class="container">
     <div class="jumbotron">
         <p>PITCHES</p>
     </div>
-    {% if posts %} {% for post in posts %}
+    {% if posts %}
+    {% for post in posts %}
 
-    <div class="panel panel-default">
+    <div class="panel panel-primary">
         <div class="panel-heading">{{post.category}}</div>
         <div class="panel-body">
-            {{post.text}}</p>
+            {{post.text}}
             <br>
-            <a class="btn btn-success btn-sm text-center" href="/pitch/comment/new">Comment</a>
+            <br>
+            <div class=""><a href="{{url_for('main.new_comment',post_id =post.id)}}">Add a comment</div>
 
         </div>
     </div>
 
-    {% endfor %} {% else %}
+
+    {% endfor %}
+    {% else %}
     No post in this category yet !!
     {% endif %}
-    {% endblock %}
 
 </div>
+{% endblock %}
