@@ -9,14 +9,17 @@ from ..import db,photos
 
 @main.route("/",methods=["GET","POST"])
 def index():
-    categories=["sales pitch", "business pitch", "music pitch", "elevator pitch"]
+    categories=["SALES PITCH", "BUSINESS PITCH", "MUSIC PITCH", "ELEVATOR PITCH"]
     return render_template('index.html',categories=categories)
+
 
 
 @main.route("/pitches/<string:category>")
 def posts(category):
     posts=list(Post.query.filter_by(category=category))
-    return render_template("./pitches.html",posts=posts)
+    return render_template("/pitches.html",posts=posts)
+
+
 
 @main.route("/add",methods=["GET","POST"])
 @login_required
@@ -29,49 +32,29 @@ def add():
         return redirect(url_for("main.index"))
     return render_template('./add.html',post_form=post_form)
 
-@main.route("/pitch/<int:post_id>",methods=["GET","POST"])
-def post(post_id):
-    comment_form=CommentForm()
-    if comment_form.validate_on_submit():
-        comment=Comment(user_id=current_user.id,post_id=post_id,pitch_comment=comment_form.comment.data)
-        comment.save_comment()
-    comments=Comment.query.filter_by(post_id=comment_id)
-    post=Post.query.filter_by(id=post_id).first()
-    
-    return render_template("./pitch.html", comment_form = comment_form)
 
 
-
-@main.route('/pitches/comment/new/<int:id>', methods = ['GET','POST'])
+@main.route('/comment/new/<int:post_id>', methods=['GET', 'POST'])
 @login_required
-def new_comment(id):
+def new_comment(post_id):
     form = CommentForm()
-    comment = get_comment(id)
+    post = Post.query.filter_by(id=post_id).first()
 
     if form.validate_on_submit():
-        title = form.title.data
         comment = form.comment.data
 
         # Updated comment instance
-        new_comment = Comment(user_id=user.id, pitches_comment=comment, user=current_user)
+        new_comment = Comment(pitch_comment=comment,user_id=current_user.id, post_id=post_id)
 
-        # save comment method
-        new_commernt.save_comment()
-        return redirect(url_for('.pitches', id=comment.id))
+        # save review method
+        db.session.add(new_comment)
+        db.session.commit()
+        
        
+    all_comments = Comment.query.filter_by(post_id=post_id).all()
+    
+    return render_template('comment.html',form=form, comments=all_comments, post=post)
 
-    title = f'{pitches.title} comment'
-    return render_template('new_comment.html', title=title, comment_form=form, pitches=pitches)
-
-
-
-@main.route('/comment/<int:id>')
-def single_comment(id):
-    comment=Comment.query.get(id)
-    if comment is None:
-        abort(404)
-    format_comment = markdown2.markdown(comment.pitches_comment,extras=["code-friendly", "fenced-code-blocks"])
-    return render_template('comment.html',comment = comment,format_comment=format_comment)
 
 
 

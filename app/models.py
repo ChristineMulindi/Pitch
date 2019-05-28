@@ -20,7 +20,7 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(255))
 
     comments = db.relationship('Comment', backref='user', lazy="dynamic")
-    posts = db.relationship('Post', backref='user_post', lazy = "dynamic")
+    posts = db.relationship('Post', backref='user', lazy = "dynamic")
     
     @property
     def password(self):
@@ -49,13 +49,12 @@ class Comment(db.Model):
     __tablename__ = 'comments'
 
     id = db.Column(db.Integer, primary_key=True)
-    comment_id = db.Column(db.Integer)
-    pitch_category = db.Column(db.String)
+    post_id=db.Column(db.Integer,db.ForeignKey('posts.id'))
     pitch_comment = db.Column(db.String)
     posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-
-    posts=db.relationship('Post', backref='comment', lazy='dynamic')
+    
+    # posts=db.relationship('Post', backref='comment', lazy='dynamic')
 
    
     def save_comment(self):
@@ -64,7 +63,7 @@ class Comment(db.Model):
 
     @classmethod
     def get_comments(cls, id):
-        comments = Comment.query.filter_by(pitch_id=id).all()
+        comments = Comment.query.order_by(post_id=id).desc().all()
         return comments
 
 
@@ -77,9 +76,10 @@ class Post(db.Model):
     post_id = db.Column(db.Integer)
     category=db.Column(db.String(255))
     user_id=db.Column(db.Integer, db.ForeignKey('users.id'))
-    comment_id =db.Column(db.Integer, db.ForeignKey('comments.id'))
+    # comment_id =db.Column(db.Integer, db.ForeignKey('comments.id'))
     
-    # comments=db.relationship('Comment', backref='post', lazy='dynamic')
+    comments=db.relationship('Comment', backref='posts', lazy='dynamic')
+
 
     def save_post(self):
         db.session.add(self)
@@ -91,7 +91,7 @@ class Post(db.Model):
         return posts
 
     def get_post(self):
-        post = Post.query.filter_by(user_id)
+        post = Post.query.filter_by(post_id)
         return post
 
 
