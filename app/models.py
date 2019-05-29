@@ -50,21 +50,26 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     post_id=db.Column(db.Integer,db.ForeignKey('posts.id'))
+    comment_id = db.Column(db.Integer)
     pitch_comment = db.Column(db.String)
     posted = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     
-    # posts=db.relationship('Post', backref='comment', lazy='dynamic')
+   
 
    
     def save_comment(self):
         db.session.add(self)
         db.session.commit()
 
-    @classmethod
-    def get_comments(cls, id):
-        comments = Comment.query.order_by(post_id=id).desc().all()
+    
+    def get_comments(self):
+        comments = Comment.query.all()
         return comments
+
+    def get_comment(self):
+        comment = Comment.query.filter_by(comment_id)
+        return comment
 
 
 class Post(db.Model):
@@ -76,7 +81,7 @@ class Post(db.Model):
     post_id = db.Column(db.Integer)
     category=db.Column(db.String(255))
     user_id=db.Column(db.Integer, db.ForeignKey('users.id'))
-    # comment_id =db.Column(db.Integer, db.ForeignKey('comments.id'))
+   
     
     comments=db.relationship('Comment', backref='posts', lazy='dynamic')
 
