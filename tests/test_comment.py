@@ -5,7 +5,7 @@ from app import db
 class TestComment(unittest.TestCase):
     def setUp(self):
         self.user_James = User(username='James', password='potato', email='james@ms.com')
-        self.new_comment = Comment(pitch_id=12345, pitch_category='Inspiration', pitch_comment='This is awesome', user=self.user_James)
+        self.new_comment = Comment(comment_id=12345, pitch_comment='This is awesome', user=self.user_James)
 
     def tearDown(self):
         Comment.query.delete()
@@ -15,7 +15,6 @@ class TestComment(unittest.TestCase):
 
     def test_check_instance_variables(self):
         self.assertEquals(self.new_comment.comment_id, 12345)
-        self.assertEquals(self.new_comment.pitch_category, 'Inspiration')
         self.assertEquals(self.new_comment.pitch_comment,'This is awesome')
         self.assertEquals(self.new_comment.user, self.user_James)
 
